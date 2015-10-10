@@ -115,6 +115,45 @@ Read through the starter code carefully. In particular, look for:
 ; Main evaluation (YOUR WORK GOES HERE)
 ;------------------------------------------------------------------------------
 
+#|--------- BEGIN Helper functions imported from exercises ---------|#
+(define (make-splitter splitter)
+  (lambda (s) (if (sublist (string-split splitter) (string-split s))
+                  (list
+                   (takef (string-split s) (lambda (x) (not(equal? x (first (string-split splitter))))))
+                   (rest(memf (lambda (x) (equal? x (last (string-split splitter)))) (string-split s)))
+                   )
+                  #f))
+  )
+
+(define (second-helper sub lst)
+  (if (empty? sub)
+      #t
+      (if (or (empty? lst) (not(equal? (first sub) (first lst))))
+          #f
+          (second-helper (rest sub) (rest lst))
+      )
+  )
+)
+
+(define (sublist-helper sub lst counter)
+  (if (empty? lst)
+      #f
+      (if (second-helper sub lst)
+          counter
+          (sublist-helper sub (rest lst) (+ counter 1))
+      )
+  )
+)
+
+(define (sublist sub lst)
+  (if (empty? sublist)
+      0
+      (sublist-helper sub lst 0)
+  )
+)
+
+#|--------- END Helper functions imported from exercises ---------|#
+
 #|
 Recursive function used to figure out what to do with each line. List contains a
 list of each line of FunShake.
@@ -160,12 +199,13 @@ Responsible for creating variables or "personae" in FunShake
    )
 
 (define (makevar line) void)
+
 (define (addline neg pos line)
   (cond
     [(empty? line) (void)];sum neg and pos here
     [(and (equal? (first line) "join'd") (equal? (first (rest line)) "with")) (+ (addline neg pos '()) (addline 0 0 (rest line)))]
     [(and (equal? (first line) "entranc'd") (equal? (first (rest line)) "by")) (- (addline neg pos '()) (addline 0 0 (rest line)))]
-    [(not(empty? (filter (not (not (map (lambda (x) (equals? (first line))) bad-words)))))) (addline (+ 1 neg) pos (rest line))]
+    [(not(empty? (filter (not (not (map (lambda (x) (equal? (first line))) bad-words)))))) (addline (+ 1 neg) pos (rest line))]
     [else (addline neg (+ 1 pos) (rest line))]
     )
    )
@@ -178,11 +218,31 @@ Responsible for creating functions or "settings" in FunShake
   (void))
 
 #|
-Responsible for managing the "dialogue" of funshake (ie. the actual computations)
+Responsible for managing the "dialogue" of funshake (ie. the actual computations). Returns a list
+of numbers that have been evaluated
 |#
 
 (define (dialogue-parser lst)
-  (void))
+  (dialogue-parser-helper lst (list) 0))
+
+(define (dialogue-parser-helper lst returnlist counter)
+  (cond
+    [(empty? lst) returnlist]
+    [(= (modulo counter 2) 0) (dialogue-parser-helper (rest lst) returnlist (+ counter 1))]
+    [else (dialogue-parser-helper (rest lst) (append returnlist (list(evaluate-line (first lst)))) (+ counter 1))]
+    )
+  )
+
+#|
+Takes a line of funshake that needs to be evaluated and evaluates it.
+str = string
+returns: int
+|#
+
+(define (evaluate-line str)
+  (length (string-split str))
+  )
+
 
 #|
 (evaluate body)
