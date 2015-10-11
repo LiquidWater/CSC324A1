@@ -198,7 +198,13 @@ Responsible for creating variables or "personae" in FunShake
       )
    )
 
-(define (makevar line) void)
+(define (makevar val name vars)
+  (append (list (lambda (x) (cond
+                        [(equal? x "val") val]
+                        [(equal? x "name") name]
+                        [else void]
+                        ))) vars))
+
 
 (define (addline neg pos line)
   (cond
