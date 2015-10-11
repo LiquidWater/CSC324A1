@@ -171,12 +171,12 @@ list of each line of FunShake.
       )
    )
 |#
-(define (line-parser lst)
+(define (line-parser lst vars)
   (if (null? lst)
       void
       (cond
-        [(equal? (first lst) personae)  (personae-parser (rest lst))]
-        [(equal? (first lst) finis)  (line-parser (rest lst))]
+        [(equal? (first lst) personae)  (personae-parser (rest lst vars))]
+        [(equal? (first lst) finis)  (line-parser (rest lst vars))]
         [else  (line-parser (rest lst))]
       )
       )
@@ -188,7 +188,7 @@ list of each line of FunShake.
 #|
 Responsible for creating variables or "personae" in FunShake
 |#
-(define (personae-parser lst)
+(define (personae-parser lst vars)
   (if (null? lst)
       void
       (cond
@@ -202,7 +202,9 @@ Responsible for creating variables or "personae" in FunShake
 
 (define (addline neg pos line)
   (cond
-    [(empty? line) (void)];sum neg and pos here
+    [(empty? line)
+     (if (> 1 neg)  makevar((* -1 (* (^ 2 b) pos))))
+     ];sum neg and pos here
     [(and (equal? (first line) "join'd") (equal? (first (rest line)) "with")) (+ (addline neg pos '()) (addline 0 0 (rest line)))]
     [(and (equal? (first line) "entranc'd") (equal? (first (rest line)) "by")) (- (addline neg pos '()) (addline 0 0 (rest line)))]
     [(not(empty? (filter (not (not (map (lambda (x) (equal? (first line))) bad-words)))))) (addline (+ 1 neg) pos (rest line))]
