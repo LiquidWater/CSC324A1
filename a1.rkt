@@ -237,8 +237,8 @@ Responsible for creating functions or "settings" in FunShake
 Responsible for managing the "dialogue" of funshake (ie. the actual
 computations). Has a recursive helper to get the value of each line.
 
-lst    = list of funshake dialogue
-returns: list of ints
+lst   : list of valid funshake dialogue
+return: list of ints
 |#
 
 (define (dialogue-parser lst)
@@ -298,7 +298,7 @@ return: int
       [(and (= len 1) (member (first str) self-refs)) (display (string-append "Var " (first str) " selfrefs " name "\n")) 1]
       #| Simply count the number of characters in the string with respect to "bad-words"|#
       [else
-       (let* ([bad-words (bad-word-counter str 0)])
+       (let* ([bad-words (bad-word-counter str 0)]) #|referred to as b in specs|#
          (if (= bad-words 0)
              len
              (* -1 (expt 2 bad-words) len)
@@ -312,7 +312,8 @@ return: int
 Takes in a line of funshake and determines the number of "bad words" in it.
 
 str    : a string-split line of funshake (list format)
-counter: number used to count number of occurences of bad words
+counter: number used to count number of occurences of bad words.
+         ***SET TO 0 WHEN CALLING***
 return : int
 |#
 
