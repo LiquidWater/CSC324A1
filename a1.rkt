@@ -154,6 +154,13 @@ Read through the starter code carefully. In particular, look for:
 
 #|--------- END Helper functions imported from exercises ---------|#
 
+#| ------ BEGIN Helper functions derived from exercise functions ------ |#
+
+(define add-splitter (make-splitter add))
+(define mult-splitter (make-splitter mult))
+
+#| ------ END Helper functions derived from exercise functions ------ |#
+
 #|
 Recursive function used to figure out what to do with each line. List contains a
 list of each line of FunShake.
@@ -209,7 +216,7 @@ Responsible for creating variables or "personae" in FunShake
 (define (addline neg pos line)
   (cond
     [(empty? line)
-     (if (> 1 neg)  makevar((* -1 (* (^ 2 b) pos))))
+     (if (> 1 neg)  makevar((* -1 (* (exp 2 2) pos))))
      ];sum neg and pos here
     [(and (equal? (first line) "join'd") (equal? (first (rest line)) "with")) (+ (addline neg pos '()) (addline 0 0 (rest line)))]
     [(and (equal? (first line) "entranc'd") (equal? (first (rest line)) "by")) (- (addline neg pos '()) (addline 0 0 (rest line)))]
@@ -248,7 +255,11 @@ returns: int
 |#
 
 (define (evaluate-line str)
-  (length (string-split str))
+  (cond
+    [(add-splitter str) (+ (length (first(add-splitter str))) (length (last(add-splitter str))))]
+    [(mult-splitter str) (* (length (first(mult-splitter str))) (length (last(mult-splitter str))))]
+    [else (length (string-split str))]
+    )
   )
 
 
