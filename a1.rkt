@@ -158,18 +158,9 @@ Read through the starter code carefully. In particular, look for:
 
 (define add-splitter (make-splitter add))
 (define mult-splitter (make-splitter mult))
+(define func-splitter (make-splitter call))
 
 #| ------ END Helper functions derived from exercise functions ------ |#
-
-#|
-Takes in a line of funshake and determines its positive or negative value. Does not perform arithmetic
-str   : a line of funshake
-return: int
-|#
-
-(define (negative-eval str)
-  (void)
-  )
 
 #|
 Recursive function used to figure out what to do with each line. List contains a
@@ -243,7 +234,9 @@ Responsible for creating functions or "settings" in FunShake
   (void))
 
 #|
-Responsible for managing the "dialogue" of funshake (ie. the actual computations).
+Responsible for managing the "dialogue" of funshake (ie. the actual
+computations). Has a recursive helper to get the value of each line.
+
 lst    = list of funshake dialogue
 returns: list of ints
 |#
@@ -259,7 +252,9 @@ returns: list of ints
   )
 
 #|
-Takes a line of funshake that needs to be evaluated and evaluates it.
+Takes a line of funshake that needs to be evaluated and evaluates it. Responsible
+for arithmetic and function calls as well as normal expressions.
+
 name    : variable name of dialogue caller
 dialogue: string of funshake dialogue
 returns : int
@@ -268,16 +263,45 @@ returns : int
 (define (evaluate-line name dialogue)
   (let*
       ([addition (add-splitter dialogue)]
-       [multiply (mult-splitter dialogue)])
+       [multiply (mult-splitter dialogue)]
+       [funcall (func-splitter dialogue)])
     
     (cond
-      [addition (+ (length (first addition)) (length (last addition)))]
-      [multiply (* (length (first multiply)) (length (last multiply)))]
-      [else (length (string-split dialogue))]
+      #|Function calls|#
+      ;[(= ) ()] 
+      #|Addition|#
+      [addition (+ (evaluate-value name (first addition)) (evaluate-value name (last addition)))]
+      #|Multiplication|#
+      [multiply (* (evaluate-value name (first multiply)) (evaluate-value name (last multiply)))]
+      #|All other expressions|#
+      [else (evaluate-value name (string-split dialogue))]
       )
     )
   )
 
+#|
+Takes in a line of funshake and determines its positive or negative value. Does
+not perform arithmetic. Performs variable lookups.
+
+name  : the name of the caller (variable name if you will)
+str   : a string-split line of funshake (list format)
+return: int
+|#
+
+(define (evaluate-value name str)
+  (let*([len (length str)])#|referred to as n in spec sheet|#
+    (cond
+      #| Variable name look up for direct name references |#
+      ;[(and (= len 1) (member (first str) vartable)) (display (string-append "Var " (first str) " refs " name "\n")) 1]
+      #| Variable name look up for self references |#
+      [(and (= len 1) (member (first str) self-refs)) (display (string-append "Var " (first str) " selfrefs " name "\n")) 1]
+      #| If this number is a negative|#
+      ;[(= ) ()]
+      #| Simply count the number of characters in the string|#
+      [else len]
+      )
+   )
+  )
 
 #|
 (evaluate body)
@@ -291,6 +315,6 @@ returns : int
 
 (define (evaluate body)
 
-  (line-parser body)
+  ;(line-parser body)
   body
   )
