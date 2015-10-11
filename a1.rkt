@@ -162,6 +162,16 @@ Read through the starter code carefully. In particular, look for:
 #| ------ END Helper functions derived from exercise functions ------ |#
 
 #|
+Takes in a line of funshake and determines its positive or negative value. Does not perform arithmetic
+str   : a line of funshake
+return: int
+|#
+
+(define (negative-eval str)
+  (void)
+  )
+
+#|
 Recursive function used to figure out what to do with each line. List contains a
 list of each line of FunShake.
 |#
@@ -233,32 +243,38 @@ Responsible for creating functions or "settings" in FunShake
   (void))
 
 #|
-Responsible for managing the "dialogue" of funshake (ie. the actual computations). Returns a list
-of numbers that have been evaluated
+Responsible for managing the "dialogue" of funshake (ie. the actual computations).
+lst    = list of funshake dialogue
+returns: list of ints
 |#
 
 (define (dialogue-parser lst)
-  (dialogue-parser-helper lst (list) 0))
+  (dialogue-parser-helper lst (list)))
 
-(define (dialogue-parser-helper lst returnlist counter)
+(define (dialogue-parser-helper lst returnlist)
   (cond
     [(empty? lst) returnlist]
-    [(= (modulo counter 2) 0) (dialogue-parser-helper (rest lst) returnlist (+ counter 1))]
-    [else (dialogue-parser-helper (rest lst) (append returnlist (list(evaluate-line (first lst)))) (+ counter 1))]
+    [else (dialogue-parser-helper (rest(rest lst)) (append returnlist (list(evaluate-line (first lst) (second lst)))))]
     )
   )
 
 #|
 Takes a line of funshake that needs to be evaluated and evaluates it.
-str = string
-returns: int
+name    : variable name of dialogue caller
+dialogue: string of funshake dialogue
+returns : int
 |#
 
-(define (evaluate-line str)
-  (cond
-    [(add-splitter str) (+ (length (first(add-splitter str))) (length (last(add-splitter str))))]
-    [(mult-splitter str) (* (length (first(mult-splitter str))) (length (last(mult-splitter str))))]
-    [else (length (string-split str))]
+(define (evaluate-line name dialogue)
+  (let*
+      ([addition (add-splitter dialogue)]
+       [multiply (mult-splitter dialogue)])
+    
+    (cond
+      [addition (+ (length (first addition)) (length (last addition)))]
+      [multiply (* (length (first multiply)) (length (last multiply)))]
+      [else (length (string-split dialogue))]
+      )
     )
   )
 
