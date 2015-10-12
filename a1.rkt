@@ -162,6 +162,23 @@ Read through the starter code carefully. In particular, look for:
 
 #| ------ END Helper functions derived from exercise functions ------ |#
 
+#|
+Helper function used to convert a list of strings into a single string with
+spaces between words.
+
+inlist : list of strings
+str    : string to be returned. CALL WITH EMPTY STRING""
+returns: string
+|#
+
+(define (list-to-string inlist str)
+  (if (empty? inlist)
+      (string-trim str " ")
+      (list-to-string (rest inlist) (string-append str (first inlist) " "))
+      )
+  )
+
+
 (define (line-parser lst vars)
   (if (null? lst)
       void
@@ -261,22 +278,24 @@ returns : int
   (let*
       ([addition (add-splitter dialogue)]
        [multiply (mult-splitter dialogue)]
-       [funcall (func-splitter dialogue)])
+       [funcall (func-splitter dialogue)]
+       [formatted-name (string-replace name ":" "")])
     
     (cond
       #|Function calls|#
-      [funcall (evaluate-funcall name funcall vars)]
+      [funcall (evaluate-funcall formatted-name (last funcall) vars)]
       #|Addition|#
-      [addition (+ (evaluate-value name (first addition) vars) (evaluate-value name (last addition) vars))]
+      [addition (+ (evaluate-value formatted-name (first addition) vars) (evaluate-value formatted-name (last addition) vars))]
       #|Multiplication|#
-      [multiply (* (evaluate-value name (first multiply) vars) (evaluate-value name (last multiply) vars))]
+      [multiply (* (evaluate-value formatted-name (first multiply) vars) (evaluate-value formatted-name (last multiply) vars))]
       #|All other expressions|#
-      [else (evaluate-value name (string-split dialogue) vars)]
+      [else (evaluate-value formatted-name (string-split dialogue) vars)]
       )
     )
   )
 #|
-Function for evaluating function calls. Returns the function called on the value of dialogue
+Function for evaluating function calls. Returns the function called on the
+value of dialogue
 
 name    : variable name of dialogue caller
 dialogue: string of funshake dialogue with some extra stuff
@@ -285,7 +304,7 @@ returns : int
 |#
 (define (evaluate-funcall name dialogue vars)
   (let* ([func-name (first dialogue)]
-         [func-param (evaluate-line name (rest(rest dialogue)) vars)])
+         [func-param (evaluate-line name (list-to-string(rest(rest dialogue)) "") vars)])
 
     ((findvar func-name vars) func-param)
     )
