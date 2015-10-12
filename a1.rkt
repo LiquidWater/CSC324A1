@@ -352,12 +352,17 @@ return : int
 
 (define (evaluate body)
 
-  (let* ([personae ( body)]
-         [settings ( body)]
-         [dialogue ( body)]
-         [vars1 (personae-parser)]
-         [vars2 (settings-parser)])
-    (dialogue-parser dialogue vars1)
+  (let* ([personae (list-tail body 1)]
+         [settings (member settings body)]
+         [dialogue (if settings
+                    (rest (member finis (rest (member finis body))))
+                    (rest (member finis body)))]
+         [vars-temp (if settings
+                        (settings-parser settings (list))
+                        (list))]
+         [vars-complete (personae-parser personae (vars-temp))])
+
+    (dialogue-parser dialogue vars-complete)
     )
   )
 
