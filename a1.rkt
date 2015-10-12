@@ -230,11 +230,9 @@ Responsible for creating functions or "settings" in FunShake
       void
       (cond
         [(equal? (first lst) finis) vars]
-        [else  (settings-parser (rest lst) (makefun
-                                            (evaluate-line ;calling evaluate line on the entire line other than "<name>, " to get the value for the makevar
-                                             "" ;no speaker for evaluate-line is needed
-                                             (substring (first lst) (string-length (first (string-split (first lst)))))
-                                             vars)
+        [else  (settings-parser (rest lst) (makefun 
+                                             (substring (first lst) (string-length (first (string-split (first lst))))) ;get everything but the name
+                                             
                                             (substring (first (string-split (first lst))) ; getting the name by taking the first word (<name>,) then substringing out the ,
                                                        0
                                                        (- (string-length(first (string-split (first lst)))) 1)) 
