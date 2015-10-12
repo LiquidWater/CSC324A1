@@ -162,23 +162,6 @@ Read through the starter code carefully. In particular, look for:
 
 #| ------ END Helper functions derived from exercise functions ------ |#
 
-#|
-Recursive function used to figure out what to do with each line. List contains a
-list of each line of FunShake.
-|#
-
-#|(define (line-parser lst)
-  (if (null? lst)
-      void
-      (cond
-        [(equal? (first lst) personae) (display "***FOUND CHARACTERS***\n") (line-parser (rest lst))]
-        [(equal? (first lst) settings) (display "***FOUND SETTINGS\n") (line-parser (rest lst))]
-        [(equal? (first lst) finis) (display "***FOUND FINIS\n") (line-parser (rest lst))]
-        [else (display "***REGULAR_TEXT***\n") (line-parser (rest lst))]
-      )
-      )
-   )
-|#
 (define (line-parser lst vars)
   (if (null? lst)
       void
@@ -190,8 +173,6 @@ list of each line of FunShake.
       )
    )
   
-
-
 
 #|
 Responsible for creating variables or "personae" in FunShake
@@ -355,8 +336,13 @@ return : int
 
 (define (evaluate body)
 
-  ;(line-parser body)
-  body
+  (let* ([personae ( body)]
+         [settings ( body)]
+         [dialogue ( body)]
+         [vars1 (personae-parser)]
+         [vars2 (settings-parser)])
+    (dialogue-parser dialogue vars1)
+    )
   )
 
 ;Find the variable or function with the given name in vars
