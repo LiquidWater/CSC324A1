@@ -358,9 +358,9 @@ return : int
                     (rest (member finis (rest (member finis body))))
                     (rest (member finis body)))]
          [vars-temp (if settings
-                        (settings-parser settings (list))
+                        (settings-parser (rest settings) (list))
                         (list))]
-         [vars-complete (personae-parser personae (vars-temp))])
+         [vars-complete (personae-parser personae vars-temp)])
 
     (dialogue-parser dialogue vars-complete)
     )
