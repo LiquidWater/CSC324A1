@@ -270,14 +270,29 @@ returns : int
     
     (cond
       #|Function calls|#
-      [funcall (void)] ;INCOMPLETE
+      [funcall (evaluate-funcall name funcall vars)]
       #|Addition|#
-      [addition (+ (evaluate-value name (first addition) vars) (evaluate-value name (last addition)) vars)]
+      [addition (+ (evaluate-value name (first addition) vars) (evaluate-value name (last addition) vars))]
       #|Multiplication|#
-      [multiply (* (evaluate-value name (first multiply) vars) (evaluate-value name (last multiply)) vars)]
+      [multiply (* (evaluate-value name (first multiply) vars) (evaluate-value name (last multiply) vars))]
       #|All other expressions|#
       [else (evaluate-value name (string-split dialogue) vars)]
       )
+    )
+  )
+#|
+Function for evaluating function calls. Returns the function called on the value of dialogue
+
+name    : variable name of dialogue caller
+dialogue: string of funshake dialogue with some extra stuff
+vars    : data structure containing all the variables and functions
+returns : int
+|#
+(define (evaluate-funcall name dialogue vars)
+  (let* ([func-name (first dialogue)]
+         [func-param (evaluate-line name (rest(rest dialogue)) vars)])
+
+    ((findvar func-name vars) func-param)
     )
   )
 
@@ -287,18 +302,18 @@ not perform arithmetic. Performs variable lookups.
 
 name  : the name of the caller (variable name if you will)
 str   : a string-split line of funshake (list format)
-vars    : data structure containing all the variables and functions
+vars  : data structure containing all the variables and functions
 return: int
 |#
 
 (define (evaluate-value name str vars)
-  (let*([len (length str)])#|referred to as n in spec sheet|#
+  (let*([len (length str)]#|referred to as n in spec sheet|#
+        [remote-name (findvar (first str) vars)])
     (cond
       #| Variable name look up for direct name references |#
-      ;[(and (= len 1) (member (first str) vartable)) (display (string-append "Var " (first str) " refs " name "\n")) 1]
+      [(and (= len 1) (not (equal? remote-name void))) remote-name]
       #| Variable name look up for self references |#
-      ; Returns 1 for now. Doesnt actually look up the name
-      [(and (= len 1) (member (first str) self-refs)) (display (string-append "Var " (first str) " selfrefs " name "\n")) 1]
+      [(and (= len 1) (member (first str) self-refs)) (findvar name vars)]
       #| Simply count the number of characters in the string with respect to "bad-words"|#
       [else
        (let* ([bad-words (bad-word-counter str 0)]) #|referred to as b in specs|#
