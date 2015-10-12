@@ -201,30 +201,28 @@ Responsible for creating variables or "personae" in FunShake
       void
       (cond
         [(equal? (first lst) finis)  (line-parser (rest lst))]
-        [else  (makevar (first lst)) (personae-parser (rest lst))]
+        [else  (makevar
+                (evaluate-line
+                 ""
+                (substring (first lst) (string-length (first (string-split (first lst)))))
+                vars)
+                (substring (first (string-split (first lst)))
+                          0
+                          (- (string-length(first (string-split (first lst)))) 1) ) 
+                vars
+                )
+              (personae-parser (rest lst) vars)]
       )
       )
    )
 
+;Responsible for making a variable once the name and value are determined
 (define (makevar val name vars)
   (append (list (lambda (x) (cond
                         [(equal? x "val") val]
                         [(equal? x "name") name]
                         [else void]
                         ))) vars))
-
-
-(define (addline neg pos line)
-  (cond
-    [(empty? line)
-     (if (> 1 neg)  makevar((* -1 (* (exp 2 2) pos))))
-     ];sum neg and pos here
-    [(and (equal? (first line) "join'd") (equal? (first (rest line)) "with")) (+ (addline neg pos '()) (addline 0 0 (rest line)))]
-    [(and (equal? (first line) "entranc'd") (equal? (first (rest line)) "by")) (- (addline neg pos '()) (addline 0 0 (rest line)))]
-    [(not(empty? (filter (not (not (map (lambda (x) (equal? (first line))) bad-words)))))) (addline (+ 1 neg) pos (rest line))]
-    [else (addline neg (+ 1 pos) (rest line))]
-    )
-   )
 
 #|
 Responsible for creating functions or "settings" in FunShake
