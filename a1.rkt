@@ -268,7 +268,7 @@ returns : int
     
     (cond
       #|Function calls|#
-      ;[(= ) ()] 
+      ;[funcall (
       #|Addition|#
       [addition (+ (evaluate-value name (first addition)) (evaluate-value name (last addition)))]
       #|Multiplication|#
@@ -342,3 +342,6 @@ return : int
   ;(line-parser body)
   body
   )
+
+;Find the variable or function with the given name in vars
+(define (findvar name vars) (if (empty? vars) void (if (equal? ((first vars) "name") name) ((first vars) "val") (findvar name (rest vars)))))
