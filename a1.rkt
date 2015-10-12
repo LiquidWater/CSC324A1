@@ -238,16 +238,17 @@ Responsible for managing the "dialogue" of funshake (ie. the actual
 computations). Has a recursive helper to get the value of each line.
 
 lst   : list of valid funshake dialogue
+vars  : data structure containing all the variables and functions
 return: list of ints
 |#
 
-(define (dialogue-parser lst)
-  (dialogue-parser-helper lst (list)))
+(define (dialogue-parser lst vars)
+  (dialogue-parser-helper lst (list) vars))
 
-(define (dialogue-parser-helper lst returnlist)
+(define (dialogue-parser-helper lst returnlist vars)
   (cond
     [(empty? lst) returnlist]
-    [else (dialogue-parser-helper (rest(rest lst)) (append returnlist (list(evaluate-line (first lst) (second lst)))))]
+    [else (dialogue-parser-helper (rest(rest lst)) (append returnlist (list(evaluate-line (first lst) (second lst) vars))) vars)]
     )
   )
 
@@ -257,10 +258,11 @@ for arithmetic and function calls as well as normal expressions.
 
 name    : variable name of dialogue caller
 dialogue: string of funshake dialogue
+vars    : data structure containing all the variables and functions
 returns : int
 |#
 
-(define (evaluate-line name dialogue)
+(define (evaluate-line name dialogue vars)
   (let*
       ([addition (add-splitter dialogue)]
        [multiply (mult-splitter dialogue)]
@@ -268,13 +270,13 @@ returns : int
     
     (cond
       #|Function calls|#
-      ;[(= ) ()] 
+      [funcall (void)] ;INCOMPLETE
       #|Addition|#
-      [addition (+ (evaluate-value name (first addition)) (evaluate-value name (last addition)))]
+      [addition (+ (evaluate-value name (first addition) vars) (evaluate-value name (last addition)) vars)]
       #|Multiplication|#
-      [multiply (* (evaluate-value name (first multiply)) (evaluate-value name (last multiply)))]
+      [multiply (* (evaluate-value name (first multiply) vars) (evaluate-value name (last multiply)) vars)]
       #|All other expressions|#
-      [else (evaluate-value name (string-split dialogue))]
+      [else (evaluate-value name (string-split dialogue) vars)]
       )
     )
   )
@@ -285,10 +287,11 @@ not perform arithmetic. Performs variable lookups.
 
 name  : the name of the caller (variable name if you will)
 str   : a string-split line of funshake (list format)
+vars    : data structure containing all the variables and functions
 return: int
 |#
 
-(define (evaluate-value name str)
+(define (evaluate-value name str vars)
   (let*([len (length str)])#|referred to as n in spec sheet|#
     (cond
       #| Variable name look up for direct name references |#
