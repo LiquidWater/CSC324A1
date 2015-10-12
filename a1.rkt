@@ -232,7 +232,7 @@ Responsible for creating functions or "settings" in FunShake
       void
       (cond
         [(equal? (first lst) finis) vars]
-        [else  (personae-parser (rest lst) (makefun
+        [else  (settings-parser (rest lst) (makefun
                                             (evaluate-line ;calling evaluate line on the entire line other than "<name>, " to get the value for the makevar
                                              "" ;no speaker for evaluate-line is needed
                                              (substring (first lst) (string-length (first (string-split (first lst)))))
