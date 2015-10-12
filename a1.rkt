@@ -200,23 +200,22 @@ Responsible for creating variables or "personae" in FunShake
   (if (null? lst)
       void
       (cond
-        [(equal? (first lst) finis)  (line-parser (rest lst))]
-        [else  (makevar
-                (evaluate-line
-                 ""
-                (substring (first lst) (string-length (first (string-split (first lst)))))
-                vars)
-                (substring (first (string-split (first lst)))
-                          0
-                          (- (string-length(first (string-split (first lst)))) 1) ) 
-                vars
-                )
-              (personae-parser (rest lst) vars)]
+        [(equal? (first lst) finis) vars]
+        [else  (personae-parser (rest lst) (makevar
+                                            (evaluate-line ;calling evaluate line on the entire line other than "<name>, " to get the value for the makevar
+                                             ""
+                                             (substring (first lst) (string-length (first (string-split (first lst)))))
+                                             vars)
+                                            (substring (first (string-split (first lst))) ; getting the name by taking the first word (<name>,) then substringing out the ,
+                                                       0
+                                                       (- (string-length(first (string-split (first lst)))) 1)) 
+                                            vars
+                                            ))]
+        )
       )
-      )
-   )
+  )
 
-;Responsible for making a variable once the name and value are determined
+;Responsible for making a variable (lambda function class list) once the name and value are determined
 (define (makevar val name vars)
   (append (list (lambda (x) (cond
                         [(equal? x "val") val]
@@ -228,8 +227,25 @@ Responsible for creating variables or "personae" in FunShake
 Responsible for creating functions or "settings" in FunShake
 |#
 
-(define (settings-parser lst)
-  (void))
+(define (settings-parser lst vars)
+  (if (null? lst)
+      void
+      (cond
+        [(equal? (first lst) finis) vars]
+        [else  (personae-parser (rest lst) (makefun
+                                            (evaluate-line ;calling evaluate line on the entire line other than "<name>, " to get the value for the makevar
+                                             "" ;no speaker for evaluate-line is needed
+                                             (substring (first lst) (string-length (first (string-split (first lst)))))
+                                             vars)
+                                            (substring (first (string-split (first lst))) ; getting the name by taking the first word (<name>,) then substringing out the ,
+                                                       0
+                                                       (- (string-length(first (string-split (first lst)))) 1)) 
+                                            vars
+                                            ))]
+        )))
+
+;Intermediate function that calls makevar but turns the value into a function that, once given an x will substitute and evaluate a line
+(define (makefun val name vars) (makevar (lambda (x) evaluate-line "" (string-replace val "Hamlet" x)) name vars))
 
 #|
 Responsible for managing the "dialogue" of funshake (ie. the actual
