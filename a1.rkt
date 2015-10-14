@@ -167,7 +167,7 @@ Helper function used to convert a list of strings into a single string with
 spaces between words.
 
 inlist : list of strings
-str    : string to be returned. CALL WITH EMPTY STRING""
+str    : string to be returned. CALL WITH EMPTY STRING ""
 returns: string
 |#
 
@@ -302,7 +302,7 @@ returns : int
 |#
 (define (evaluate-funcall name dialogue vars)
   (let* ([func-name (first dialogue)]
-         [func-param (evaluate-line name (list-to-string(rest(rest dialogue)) "") vars)])
+         [func-param (list-to-string(rest(rest dialogue)) "")])
 
     ((findvar func-name vars) func-param)
     )
