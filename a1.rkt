@@ -242,7 +242,7 @@ Responsible for creating functions or "settings" in FunShake
         )))
 
 ;Intermediate function that calls makevar but turns the value into a function that, once given an x will substitute and evaluate a line
-(define (makefun val name vars) (makevar (lambda (speaker x) (evaluate-line speaker  val (makevar (evaluate-line speaker x vars) "Hamlet" vars x))) name vars ""))
+(define (makefun val name vars) (makevar (lambda (speaker x var2) (evaluate-line speaker  val (makevar (evaluate-line speaker x var2) "Hamlet" var2 x))) name vars ""))
 
 #|
 Responsible for managing the "dialogue" of funshake (ie. the actual
