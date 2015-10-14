@@ -304,7 +304,10 @@ returns : int
   (let* ([func-name (first dialogue)]
          [func-param (list-to-string(rest(rest dialogue)) "")])
 
-    ((findvar func-name vars) name func-param)
+    (if (equal? func-param "Hamlet")
+        (void)
+        ((findvar func-name vars) name func-param)
+        )
     )
   )
 
@@ -389,5 +392,3 @@ return : int
 
 ;Find the variable or function with the given name in vars
 (define (findvar name vars) (if (empty? vars) void (if (equal? ((first vars) "name") name) ((first vars) "val") (findvar name (rest vars)))))
-
-(interpret "filename.txt")
