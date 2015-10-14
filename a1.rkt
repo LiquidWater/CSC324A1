@@ -306,8 +306,8 @@ returns : int
          [func-param (list-to-string(rest(rest dialogue)) "")])
 
     (if (equal? func-param "Hamlet")
-        (void)
-        ((findvar func-name vars) name func-param)
+        ((findvar func-name vars) name (findvarText "Hamlet" vars) (removeham vars '()))
+        ((findvar func-name vars) name func-param vars)
         )
     )
   )
