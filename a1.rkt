@@ -208,16 +208,17 @@ Responsible for creating variables or "personae" in FunShake
                                                        0
                                                        (- (string-length(first (string-split (first lst)))) 1)) 
                                             vars
-                                            ))]
+                                            "" ))]
         )
       )
   )
 
 ;Responsible for making a variable (lambda function class list) once the name and value are determined
-(define (makevar val name vars)
+(define (makevar val name vars text)
   (append (list (lambda (x) (cond
                         [(equal? x "val") val]
                         [(equal? x "name") name]
+                        [(equal? x "text") name]
                         [else void]
                         ))) vars))
 
@@ -241,7 +242,7 @@ Responsible for creating functions or "settings" in FunShake
         )))
 
 ;Intermediate function that calls makevar but turns the value into a function that, once given an x will substitute and evaluate a line
-(define (makefun val name vars) (makevar (lambda (speaker x) (evaluate-line speaker  val (makevar (evaluate-line speaker x vars) "Hamlet" vars))) name vars))
+(define (makefun val name vars) (makevar (lambda (speaker x) (evaluate-line speaker  val (makevar (evaluate-line speaker x vars) "Hamlet" vars))) name vars ""))
 
 #|
 Responsible for managing the "dialogue" of funshake (ie. the actual
@@ -390,4 +391,8 @@ return : int
 ;Find the variable or function with the given name in vars
 (define (findvar name vars) (if (empty? vars) void (if (equal? ((first vars) "name") name) ((first vars) "val") (findvar name (rest vars)))))
 
-(interpret "filename.txt")
+;Find the Text of a variable instead of its evaluated value, only used in nested function calls to sub hamlet
+(define (findvarText name vars) (if (empty? vars) void (if (equal? ((first vars) "name") name) ((first vars) "text") (findvar name (rest vars)))))
+
+;Removes a var from vars
+(define (removevar name vars prev) (if (empty? vars) void (if (equal? ((first vars) "name") name) (append prev (rest vars)) (findvar name (rest vars) (append prev (first vars))))))
