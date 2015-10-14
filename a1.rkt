@@ -396,7 +396,7 @@ return : int
 
 
 ;Find the Text of a variable instead of its evaluated value, only used in nested function calls to sub hamlet
-(define (findvarText name vars) (if (empty? vars) void (if (equal? ((first vars) "name") name) ((first vars) "text") (findvar name (rest vars)))))
+(define (findvarText name vars) (if (empty? vars) void (if (equal? ((first vars) "name") name) ((first vars) "text") (findvarText name (rest vars)))))
 
 ;Removes a var from vars
-(define (removevar name vars prev) (if (empty? vars) void (if (equal? ((first vars) "name") name) (append prev (rest vars)) (findvar name (rest vars) (append prev (first vars))))))
+(define (removeham vars prev) (if (empty? vars) void (if (equal? ((first vars) "name") "Hamlet") (append prev (rest vars)) (removeham (rest vars) (append prev (first vars))))))
