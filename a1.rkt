@@ -305,7 +305,10 @@ returns : int
   (let* ([func-name (first dialogue)]
          [func-param (list-to-string(rest(rest dialogue)) "")])
 
-    ((findvar func-name vars) name func-param)
+    (if (equal? func-param "Hamlet")
+        (void)
+        ((findvar func-name vars) name func-param)
+        )
     )
   )
 
@@ -390,9 +393,12 @@ return : int
 
 ;Find the variable or function with the given name in vars
 (define (findvar name vars) (if (empty? vars) void (if (equal? ((first vars) "name") name) ((first vars) "val") (findvar name (rest vars)))))
+<<<<<<< HEAD
 
 ;Find the Text of a variable instead of its evaluated value, only used in nested function calls to sub hamlet
 (define (findvarText name vars) (if (empty? vars) void (if (equal? ((first vars) "name") name) ((first vars) "text") (findvar name (rest vars)))))
 
 ;Removes a var from vars
 (define (removevar name vars prev) (if (empty? vars) void (if (equal? ((first vars) "name") name) (append prev (rest vars)) (findvar name (rest vars) (append prev (first vars))))))
+=======
+>>>>>>> 154dbbf2942f71926c5fae631239ff58c561c9db
