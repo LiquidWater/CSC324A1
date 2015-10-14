@@ -199,16 +199,20 @@ Responsible for creating variables or "personae" in FunShake
       void
       (cond
         [(equal? (first lst) finis) vars]
-        [else  (personae-parser (rest lst) (makevar
-                                            (evaluate-line ;calling evaluate line on the entire line other than "<name>, " to get the value for the makevar
-                                             ""
-                                             (substring (first lst) (string-length (first (string-split (first lst)))))
-                                             vars)
-                                            (substring (first (string-split (first lst))) ; getting the name by taking the first word (<name>,) then substringing out the ,
-                                                       0
-                                                       (- (string-length(first (string-split (first lst)))) 1)) 
-                                            vars
-                                            "" ))]
+        [else
+         (personae-parser
+          (rest lst)
+          (makevar
+           ;calling evaluate line on the entire line other than "<name>, " to get the value for the makevar
+           (evaluate-line "" (substring (first lst) (string-length (first (string-split (first lst))))) vars)
+           ; getting the name by taking the first word (<name>,) then substringing out the ,
+           (substring (first (string-split (first lst))) 
+                      0
+                      (- (string-length(first (string-split (first lst)))) 1)) 
+           vars
+           ""
+           )
+          )]
         )
       )
   )
@@ -231,18 +235,62 @@ Responsible for creating functions or "settings" in FunShake
       void
       (cond
         [(equal? (first lst) finis) vars]
-        [else  (settings-parser (rest lst) (makefun 
-                                             (substring (first lst) (string-length (first (string-split (first lst))))) ;get everything but the name
-                                             
-                                            (substring (first (string-split (first lst))) ; getting the name by taking the first word (<name>,) then substringing out the ,
-                                                       0
-                                                       (- (string-length(first (string-split (first lst)))) 1)) 
-                                            vars
-                                            ))]
-        )))
+        [else
+         (settings-parser
+          (rest lst)
+          (makefun
+           ;get everything but the name
+           (substring (first lst) (string-length (first (string-split (first lst)))))
+           ; getting the name by taking the first word (<name>,) then substringing out the ,
+           (substring (first (string-split (first lst)))
+                      0
+                      (- (string-length(first (string-split (first lst)))) 1))
+           vars
+           )
+          )]
+        )
+      )
+  )
 
-;Intermediate function that calls makevar but turns the value into a function that, once given an x will substitute and evaluate a line
-(define (makefun val name vars) (makevar (lambda (speaker x var2) (evaluate-line speaker  val (makevar (evaluate-line speaker x var2) "Hamlet" var2 x))) name vars ""))
+#|
+Intermediate function that calls makevar but turns the value into a function
+that, once given an x will substitute and evaluate a line
+|#
+(define (makefun val name vars)
+  (makevar
+   (lambda (speaker x var2) (evaluate-line speaker val (makevar (evaluate-line speaker x var2) "Hamlet" var2 x)))
+   name
+   vars
+   "")
+  )
+
+;Find the variable or function with the given name in vars
+(define (findvar name vars)
+  (if (empty? vars)
+      void
+      (if (equal? ((first vars) "name") name)
+          ((first vars) "val")
+          (findvar name (rest vars)))))
+
+
+#|
+Find the Text of a variable instead of its evaluated value, only used in nested
+function calls to sub hamlet
+|#
+(define (findvarText name vars)
+  (if (empty? vars)
+      void
+      (if (equal? ((first vars) "name") name)
+          ((first vars) "text")
+          (findvarText name (rest vars)))))
+
+;Removes a var from vars
+(define (removeham vars prev)
+  (if (empty? vars)
+      void
+      (if (equal? ((first vars) "name") "Hamlet")
+          (append prev (rest vars))
+          (removeham (rest vars) (append prev (first vars))))))
 
 #|
 Responsible for managing the "dialogue" of funshake (ie. the actual
@@ -390,13 +438,3 @@ return : int
     (dialogue-parser dialogue vars-complete)
     )
   )
-
-;Find the variable or function with the given name in vars
-(define (findvar name vars) (if (empty? vars) void (if (equal? ((first vars) "name") name) ((first vars) "val") (findvar name (rest vars)))))
-
-
-;Find the Text of a variable instead of its evaluated value, only used in nested function calls to sub hamlet
-(define (findvarText name vars) (if (empty? vars) void (if (equal? ((first vars) "name") name) ((first vars) "text") (findvarText name (rest vars)))))
-
-;Removes a var from vars
-(define (removeham vars prev) (if (empty? vars) void (if (equal? ((first vars) "name") "Hamlet") (append prev (rest vars)) (removeham (rest vars) (append prev (first vars))))))
