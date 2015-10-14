@@ -304,7 +304,7 @@ returns : int
   (let* ([func-name (first dialogue)]
          [func-param (list-to-string(rest(rest dialogue)) "")])
 
-    ((findvar func-name vars) func-param)
+    ((findvar func-name vars) name func-param)
     )
   )
 
