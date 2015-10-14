@@ -241,7 +241,7 @@ Responsible for creating functions or "settings" in FunShake
         )))
 
 ;Intermediate function that calls makevar but turns the value into a function that, once given an x will substitute and evaluate a line
-(define (makefun val name vars) (makevar (lambda (x speaker) (evaluate-line speaker  val (makevar (evaluate-line speaker x vars) "Hamlet" vars))) name vars))
+(define (makefun val name vars) (makevar (lambda (speaker x) (evaluate-line speaker  val (makevar (evaluate-line speaker x vars) "Hamlet" vars))) name vars))
 
 #|
 Responsible for managing the "dialogue" of funshake (ie. the actual
@@ -389,3 +389,5 @@ return : int
 
 ;Find the variable or function with the given name in vars
 (define (findvar name vars) (if (empty? vars) void (if (equal? ((first vars) "name") name) ((first vars) "val") (findvar name (rest vars)))))
+
+(interpret "filename.txt")
